@@ -26,8 +26,15 @@ def login():
     else:
         hash_value = user[0]
         if check_password_hash(hash_value,password):
+            result = db.session.execute("SELECT area, request_amount FROM areas")
+            result2 = db.session.execute("SELECT area FROM areas")
+            areas = result2.fetchall()
+            arealist = []
+            for area in areas:
+                arealist.append(area)
+            areass = result.fetchall()
             session["username"] = username
-            return redirect("/")
+            return render_template("index.html", areass=areass, areas=arealist)
         else:
             return redirect("/")
 
@@ -45,3 +52,17 @@ def register():
 def logout():
     del session["username"]
     return redirect("/")
+
+@app.route("/inarea", methods=["POST","GET"])
+def inarea():
+    direction = request.form['arean']
+    direction = direction.replace("'","")
+    direction = direction.replace(",","")
+    direction = direction.replace("(","")
+    direction = direction.replace(")","")
+    rdir = "SELECT id FROM areas WHERE area =:direction"
+    rdirection = db.session.execute(rdir, {"direction":direction}).fetchone()[0]
+    sql = "SELECT request FROM requests WHERE area_id =:rdirection"
+    result = db.session.execute(sql, {"rdirection":rdirection})
+    area = result.fetchall()
+    return render_template("area.html", area=area)
