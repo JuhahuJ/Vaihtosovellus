@@ -1,4 +1,13 @@
 # Vaihtosovellus
+
+## Nykyinen tilanne
+
+Sovelluksessa voi luoda käyttäjän, selata alueita ja nähdä alueiden vaihtopyynnöt.
+Sovellusta voi testata Herokussa osoitteessa https://vaihtosovellus.herokuapp.com/
+Rekisteröitymisestä ei tule tällä hetkellä ilmoitusta, vaan se ohjautuu suoraan samalle sivulle takaisin.
+
+## Tavoite
+
 Sovellus, jonka avulla käyttäjät voivat julkaista vaihtopyyntöjä, joiden avulla voi vaihtaa esineitä ja muita asioita.
 Esimerkiksi käyttäjä 1 pyytää pyörän pumppua ja tarjoaa vaihdossa pumpun antajan kanssa sovittavaa palvelua, esim. nurmikon leikkaus.
 Jokainen käyttäjä on joko peruskäyttäjä tai ylläpitäjä.
