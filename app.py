@@ -34,7 +34,7 @@ def login():
                 arealist.append(area)
             areass = result.fetchall()
             session["username"] = username
-            return render_template("index.html", areass=areass, areas=arealist)
+            return render_template("areas.html", areass=areass, areas=arealist)
         else:
             return redirect("/")
 
@@ -66,3 +66,22 @@ def inarea():
     result = db.session.execute(sql, {"rdirection":rdirection})
     area = result.fetchall()
     return render_template("area.html", area=area)
+
+@app.route("/create_area", methods=["POST","GET"])
+def create_area():
+    return render_template("create_area.html")
+
+@app.route("/creating_area", methods=["POST","GET"])
+def creating_area():
+    areaname = request.form['name_of_area']
+    sql = "INSERT INTO areas (area, request_amount) VALUES (:areaname, 0)"
+    db.session.execute(sql, {"areaname":areaname})
+    db.session.commit()
+    sql2 = db.session.execute("SELECT area, request_amount FROM areas")
+    sql3 = db.session.execute("SELECT area FROM areas")
+    areas = sql3.fetchall()
+    arealist = []
+    for area in areas:
+        arealist.append(area)
+    areass = sql2.fetchall()
+    return render_template("areas.html", areass=areass, areas=arealist)

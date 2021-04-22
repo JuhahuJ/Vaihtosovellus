@@ -1,0 +1,8 @@
+{% if session.username %}
+<form action="/creating_area" name="createarea" method="POST">
+<p>Alueen nimi:<br>
+<input type="text" name="name_of_area"></p>
+<input type="submit" value="Luo alue">
+</form>
+<a href="/logout">Kirjaudu ulos</a>
+{% endif %}

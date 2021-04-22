@@ -1,0 +1,15 @@
+{% if session.username %}
+<p>Olet kirjautunut nimellä {{ session.username }}</p>
+<p>{{ areass }}</p>
+<form action="/inarea" name="choosearea" method="POST">
+<P>Valitse alue:<br>
+<select name="arean" type="arean">
+    {% for area in areas %}
+    <option type ="arean" value= "{{area}}" SELECTED>{{area}}</option>"
+    {% endfor %}
+</select>
+<input type="submit" value="Mene alueelle">
+</form>
+<a href="/create_area">Luo alue</a>
+<a href="/logout">Kirjaudu ulos</a>
+{% endif %}
