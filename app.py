@@ -53,16 +53,12 @@ def logout():
 @app.route("/inarea", methods=["POST","GET"])
 def inarea():
     direction = request.form['arean']
-    direction = direction.replace("'","")
-    direction = direction.replace(",","")
-    direction = direction.replace("(","")
-    direction = direction.replace(")","")
     rdir = "SELECT id FROM areas WHERE area =:direction"
     rdirection = db.session.execute(rdir, {"direction":direction}).fetchone()[0]
     sql = "SELECT request FROM requests WHERE area_id =:rdirection"
     result = db.session.execute(sql, {"rdirection":rdirection})
-    area = result.fetchall()
-    return render_template("area.html", area=area)
+    areas = result.fetchall()
+    return render_template("area.html", areas=areas)
 
 @app.route("/create_area", methods=["POST","GET"])
 def create_area():
@@ -79,10 +75,5 @@ def creating_area():
 @app.route("/go_areas", methods=["POST","GET"])
 def go_areas():
     sql = db.session.execute("SELECT area, request_amount FROM areas")
-    sql2 = db.session.execute("SELECT area FROM areas")
-    areas = sql2.fetchall()
-    arealist = []
-    for area in areas:
-        arealist.append(area)
     areass = sql.fetchall()
-    return render_template("areas.html", areass=areass, areas=arealist)
+    return render_template("areas.html", areass=areass)

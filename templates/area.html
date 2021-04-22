@@ -1,6 +1,10 @@
 {% if session.username %}
 <p>Olet kirjautunut nimellä {{ session.username }}</p>
-<p>{{ area }}</p>
+{% for item in areas %}
+<tr>
+<td><input name="request" type="submit" value={{ item.request }}></td>
+</tr>
+{% endfor %}
 <a href="/go_areas">Palaa takaisin alueisiin</a>
 <a href="/logout">Kirjaudu ulos</a>
 {% endif %}

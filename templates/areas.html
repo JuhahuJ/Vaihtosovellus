@@ -1,14 +1,21 @@
 {% if session.username %}
 <p>Olet kirjautunut nimellä {{ session.username }}</p>
-<p>{{ areass }}</p>
 <form action="/inarea" name="choosearea" method="POST">
-<P>Valitse alue:<br>
-<select name="arean" type="arean">
-    {% for area in areas %}
-    <option type ="arean" value= "{{area}}" SELECTED>{{area}}</option>"
-    {% endfor %}
-</select>
-<input type="submit" value="Mene alueelle">
+<style>
+table, th, td {border: 1px solid black;}
+</style>
+<table>
+<tr>
+<th>Alueet</th>
+<th>Pyynnöt</th>
+</tr>
+{% for item in areass %}
+<tr>
+<td><input name="arean" type="submit" value={{ item.area }}></td>
+<td>{{ item.request_amount }}</td>
+</tr>
+{% endfor %}
+</table>
 </form>
 <a href="/create_area">Luo alue</a>
 <a href="/logout">Kirjaudu ulos</a>
