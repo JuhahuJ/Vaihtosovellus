@@ -26,19 +26,16 @@ def login():
     else:
         hash_value = user[0]
         if check_password_hash(hash_value,password):
-            result = db.session.execute("SELECT area, request_amount FROM areas")
-            result2 = db.session.execute("SELECT area FROM areas")
-            areas = result2.fetchall()
-            arealist = []
-            for area in areas:
-                arealist.append(area)
-            areass = result.fetchall()
             session["username"] = username
-            return render_template("areas.html", areass=areass, areas=arealist)
+            return redirect("/go_areas")
         else:
             return redirect("/")
 
-@app.route("/register",methods=["POST"])
+@app.route("/go_register")
+def go_register():
+    return render_template("register.html")
+
+@app.route("/register",methods=["POST","GET"])
 def register():
     username = request.form["username"]
     password = request.form["password"]
@@ -77,11 +74,15 @@ def creating_area():
     sql = "INSERT INTO areas (area, request_amount) VALUES (:areaname, 0)"
     db.session.execute(sql, {"areaname":areaname})
     db.session.commit()
-    sql2 = db.session.execute("SELECT area, request_amount FROM areas")
-    sql3 = db.session.execute("SELECT area FROM areas")
-    areas = sql3.fetchall()
+    return redirect("/go_areas")
+#kokeile poistaa app.route
+@app.route("/go_areas", methods=["POST","GET"])
+def go_areas():
+    sql = db.session.execute("SELECT area, request_amount FROM areas")
+    sql2 = db.session.execute("SELECT area FROM areas")
+    areas = sql2.fetchall()
     arealist = []
     for area in areas:
         arealist.append(area)
-    areass = sql2.fetchall()
+    areass = sql.fetchall()
     return render_template("areas.html", areass=areass, areas=arealist)
