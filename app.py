@@ -75,7 +75,7 @@ def creating_area():
     db.session.execute(sql, {"areaname":areaname})
     db.session.commit()
     return redirect("/go_areas")
-#kokeile poistaa app.route
+
 @app.route("/go_areas", methods=["POST","GET"])
 def go_areas():
     sql = db.session.execute("SELECT area, request_amount FROM areas")

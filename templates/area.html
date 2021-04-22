@@ -1,5 +1,6 @@
 {% if session.username %}
 <p>Olet kirjautunut nimellä {{ session.username }}</p>
 <p>{{ area }}</p>
+<a href="/go_areas">Palaa takaisin alueisiin</a>
 <a href="/logout">Kirjaudu ulos</a>
 {% endif %}
