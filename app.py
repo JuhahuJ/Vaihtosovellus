@@ -12,6 +12,8 @@ db = SQLAlchemy(app)
 
 @app.route("/")
 def index():
+    session["user_already_exists"] = False
+    session["not_same_password"] = False
     return render_template("index.html")
 
 @app.route("/login",methods=["POST"])
@@ -50,9 +52,11 @@ def register():
             del session["user_already_exists"]
             return redirect("/")
         except Exception:
+            session["not_same_password"] = False
             session["user_already_exists"] = True
             return redirect("/go_register")
     else:
+        session["user_already_exists"] = False
         session["not_same_password"] = True
         return redirect("/go_register")
 

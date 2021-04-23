@@ -1,7 +1,7 @@
-{% if session.not_same_password %}
+{% if session.not_same_password == True%}
 Tarkista, että kirjoitit salasanan oikein
 {% endif %}
-{% if session.user_already_exists %}
+{% if session.user_already_exists == True %}
 Käyttäjä on jo olemassa
 {% endif %}
 <form action="/register" method="POST">
