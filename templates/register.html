@@ -1,8 +1,16 @@
+{% if session.not_same_password %}
+Tarkista, että kirjoitit salasanan oikein
+{% endif %}
+{% if session.user_already_exists %}
+Käyttäjä on jo olemassa
+{% endif %}
 <form action="/register" method="POST">
 <p>Tunnus:<br>
 <input type="text" name="username"></p>
 <p>Salasana:<br>
 <input type="password" name="password"></p>
+<p>Salasana uudestaan:<br>
+<input type="password" name="password2"></p>
 <input type="submit" value="Rekisteröidy">
 </form>
 <a href="/">Palaa takaisin</a>

@@ -39,11 +39,22 @@ def go_register():
 def register():
     username = request.form["username"]
     password = request.form["password"]
-    hash_value = generate_password_hash(password)
-    sql = "INSERT INTO users (username,password,admin) VALUES (:username,:password,false)"
-    db.session.execute(sql, {"username":username,"password":hash_value})
-    db.session.commit()
-    return redirect("/")
+    password2 = request.form["password2"]
+    if password == password2:
+        try:
+            hash_value = generate_password_hash(password)
+            sql = "INSERT INTO users (username,password,admin) VALUES (:username,:password,false)"
+            db.session.execute(sql, {"username":username,"password":hash_value})
+            db.session.commit()
+            del session["not_same_password"]
+            del session["user_already_exists"]
+            return redirect("/")
+        except Exception:
+            session["user_already_exists"] = True
+            return redirect("/go_register")
+    else:
+        session["not_same_password"] = True
+        return redirect("/go_register")
 
 @app.route("/logout")
 def logout():
