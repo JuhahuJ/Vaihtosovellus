@@ -1,0 +1,17 @@
+{% if session.username %}
+<p>Olet kirjautunut nimellä {{ session.username }}</p>
+{% for item in requesta %}
+<p>Haluan:<br>
+{{ item.need }}
+<p>Tarjoan:<br>
+{{ item.offer }}
+<p>Yhteystietoja:<br>
+{{ item.contact }}
+<p>Luonut:<br>
+{{ item.postedby }}
+{% endfor %}
+<br><br>
+<a href="/go_areas">Palaa takaisin alueisiin</a>
+<br>
+<a href="/logout">Kirjaudu ulos</a>
+{% endif %}

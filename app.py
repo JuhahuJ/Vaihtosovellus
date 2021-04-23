@@ -64,6 +64,7 @@ def logout():
 @app.route("/inarea", methods=["POST","GET"])
 def inarea():
     direction = request.form['arean']
+    session["area"] = direction
     rdir = "SELECT id FROM areas WHERE area =:direction"
     rdirection = db.session.execute(rdir, {"direction":direction}).fetchone()[0]
     sql = "SELECT request FROM requests WHERE area_id =:rdirection"
@@ -85,6 +86,42 @@ def creating_area():
 
 @app.route("/go_areas", methods=["POST","GET"])
 def go_areas():
+    session["area"] = "no_area_chosen"
+    del session["area"]
     sql = db.session.execute("SELECT area, request_amount FROM areas")
     areass = sql.fetchall()
     return render_template("areas.html", areass=areass)
+
+@app.route("/app_request", methods=["POST","GET"])
+def app_request():
+    title = request.form['request']
+    sarea = session["area"]
+    rdir = "SELECT id FROM areas WHERE area =:sarea"
+    rdirection = db.session.execute(rdir, {"sarea":sarea}).fetchone()[0]
+    sql = "SELECT need, offer, postedby, contact FROM request WHERE area_id =:rdirection AND request_title =:title"
+    result = db.session.execute(sql, {"rdirection":rdirection, "title":title})
+    requesta = result.fetchall()
+    return render_template("request.html", requesta=requesta)
+
+@app.route("/create_request", methods=["POST", "GET"])
+def create_request():
+    title = request.form['title']
+    need = request.form['need']
+    offer = request.form['offer']
+    contact = request.form['contact']
+    postedby = session["username"]
+    area = session["area"]
+    rdir = "SELECT id FROM areas WHERE area =:area"
+    areaid = db.session.execute(rdir, {"area":area}).fetchone()[0]
+    sql = "INSERT INTO request (request_title, need, offer, contact, postedby, area_id) VALUES (:title, :need, :offer, :contact, :postedby, :areaid)"
+    sql2 = "INSERT INTO requests (request, area_id) VALUES (:title, :areaid)"
+    sql3 = "UPDATE areas SET request_amount = (request_amount+1) WHERE area =:area"
+    db.session.execute(sql3, {"area":area})
+    db.session.execute(sql2, {"title":title, "areaid":areaid})
+    db.session.execute(sql, {"title":title, "need":need, "offer":offer, "contact":contact, "postedby":postedby, "areaid":areaid})
+    db.session.commit()
+    return redirect("/go_areas")
+
+@app.route("/go_create_request")
+def go_create_request():
+    return render_template("create_request.html")

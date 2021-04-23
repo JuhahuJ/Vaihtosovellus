@@ -1,10 +1,17 @@
 {% if session.username %}
 <p>Olet kirjautunut nimellä {{ session.username }}</p>
+<a>Pyynnöt:<br><br>
+<form action="/app_request" name="chooserequest" method="POST">
 {% for item in areas %}
 <tr>
 <td><input name="request" type="submit" value={{ item.request }}></td>
+<br>
 </tr>
 {% endfor %}
+</form>
+<a href="/go_create_request">Luo vaihtopyyntö</a>
+<br>
 <a href="/go_areas">Palaa takaisin alueisiin</a>
+<br>
 <a href="/logout">Kirjaudu ulos</a>
 {% endif %}
