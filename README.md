@@ -2,9 +2,17 @@
 
 ## Nykyinen tilanne
 
-Sovelluksessa voi luoda käyttäjän, selata alueita ja nähdä alueiden vaihtopyynnöt.
-Sovellusta voi testata Herokussa osoitteessa https://vaihtosovellus.herokuapp.com/
-Rekisteröitymisestä ei tule tällä hetkellä ilmoitusta, vaan se ohjautuu suoraan samalle sivulle takaisin.
+Sovelluksessa voi luoda käyttäjän, selata ja luoda alueita ja nähdä alueiden vaihtopyynnöt. Käyttäjä voi luoda vaihtopyynnön, jossa täytyy olla otsikko, ja jossa voi olla haluttu asia, tarjottu asia ja yhteystietoja. Sovellusta voi testata Herokussa osoitteessa https://vaihtosovellus.herokuapp.com/. 
+
+## Puuttuvia asioita
+
+-pyyntöjen muokkaus ja poisto
+
+-admin käyttäjät
+
+-alueiden poisto (admin ominaisuus)
+
+-koodin siistiminen
 
 ## Tavoite
 
