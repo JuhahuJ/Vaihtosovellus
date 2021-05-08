@@ -1,16 +1,18 @@
 {% if session.username %}
 <p>Olet kirjautunut nimellä {{ session.username }}</p>
-{% for item in requesta %}
 <p>Haluan:<br>
-{{ item.need }}
+{{ requesta.need }}
 <p>Tarjoan:<br>
-{{ item.offer }}
+{{ requesta.offer }}
 <p>Yhteystietoja:<br>
-{{ item.contact }}
+{{ requesta.contact }}
 <p>Luonut:<br>
-{{ item.postedby }}
-{% endfor %}
+{{ requesta.postedby }}
 <br><br>
+{% if session.username == requesta.postedby %}
+<a href="/del_area">Poista tämä pyyntö</a>
+<br>
+{% endif %}
 <a href="/go_areas">Palaa takaisin alueisiin</a>
 <br>
 <a href="/logout">Kirjaudu ulos</a>

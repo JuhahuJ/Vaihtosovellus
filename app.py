@@ -71,9 +71,10 @@ def inarea():
     session["area"] = direction
     rdir = "SELECT id FROM areas WHERE area =:direction"
     rdirection = db.session.execute(rdir, {"direction":direction}).fetchone()[0]
-    sql = "SELECT request FROM requests WHERE area_id =:rdirection AND is_visible = true"
+    sql = "SELECT request FROM requests WHERE area_id =:rdirection"
     result = db.session.execute(sql, {"rdirection":rdirection})
     areas = result.fetchall()
+    session["current_area_id"] = rdirection
     return render_template("area.html", areas=areas)
 
 @app.route("/create_area", methods=["POST","GET"])
@@ -83,7 +84,7 @@ def create_area():
 @app.route("/creating_area", methods=["POST","GET"])
 def creating_area():
     areaname = request.form['name_of_area']
-    sql = "INSERT INTO areas (area, request_amount, is_visible) VALUES (:areaname, 0, true)"
+    sql = "INSERT INTO areas (area, request_amount) VALUES (:areaname, 0)"
     db.session.execute(sql, {"areaname":areaname})
     db.session.commit()
     return redirect("/go_areas")
@@ -92,7 +93,7 @@ def creating_area():
 def go_areas():
     session["area"] = "no_area_chosen"
     del session["area"]
-    sql = db.session.execute("SELECT area, request_amount FROM areas WHERE is_visible = true")
+    sql = db.session.execute("SELECT area, request_amount FROM areas")
     areass = sql.fetchall()
     return render_template("areas.html", areass=areass)
 
@@ -102,9 +103,10 @@ def app_request():
     sarea = session["area"]
     rdir = "SELECT id FROM areas WHERE area =:sarea"
     rdirection = db.session.execute(rdir, {"sarea":sarea}).fetchone()[0]
-    sql = "SELECT need, offer, postedby, contact FROM request WHERE area_id =:rdirection AND request_title =:title AND is_visible = true"
+    sql = "SELECT * FROM request WHERE area_id =:rdirection AND request_title =:title"
     result = db.session.execute(sql, {"rdirection":rdirection, "title":title})
-    requesta = result.fetchall()
+    requesta = result.fetchone()
+    session["current_request"] = requesta.request_title
     return render_template("request.html", requesta=requesta)
 
 @app.route("/create_request", methods=["POST", "GET"])
@@ -117,8 +119,8 @@ def create_request():
     area = session["area"]
     rdir = "SELECT id FROM areas WHERE area =:area"
     areaid = db.session.execute(rdir, {"area":area}).fetchone()[0]
-    sql = "INSERT INTO request (request_title, need, offer, contact, postedby, area_id, is_visible) VALUES (:title, :need, :offer, :contact, :postedby, :areaid, true)"
-    sql2 = "INSERT INTO requests (request, area_id, is_visible) VALUES (:title, :areaid, true)"
+    sql = "INSERT INTO request (request_title, need, offer, contact, postedby, area_id) VALUES (:title, :need, :offer, :contact, :postedby, :areaid)"
+    sql2 = "INSERT INTO requests (request, area_id) VALUES (:title, :areaid)"
     sql3 = "UPDATE areas SET request_amount = (request_amount+1) WHERE area =:area"
     db.session.execute(sql3, {"area":area})
     db.session.execute(sql2, {"title":title, "areaid":areaid})
@@ -129,3 +131,19 @@ def create_request():
 @app.route("/go_create_request")
 def go_create_request():
     return render_template("create_request.html")
+
+@app.route("/del_area")
+def del_area():
+    current_request = session["current_request"]
+    area = session["area"]
+    area_id = session["current_area_id"]
+    sql = "DELETE FROM requests WHERE request = :current_request AND area_id = :area_id"
+    sql2 = "UPDATE areas SET request_amount = (request_amount-1) WHERE area =:area"
+    sql3 = "DELETE FROM request WHERE request_title = :current_request AND area_id = :area_id"
+    db.session.execute(sql2, {"area":area})
+    db.session.execute(sql, {"current_request":current_request, "area_id":area_id})
+    db.session.execute(sql3, {"current_request":current_request, "area_id":area_id})
+    db.session.commit()
+    del session["current_request"]
+    del session["current_request_id"]
+    return redirect("/go_areas")
