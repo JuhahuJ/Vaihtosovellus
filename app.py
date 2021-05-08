@@ -45,8 +45,8 @@ def register():
     if password == password2:
         try:
             hash_value = generate_password_hash(password)
-            sql = "INSERT INTO users (username,password,admin) VALUES (:username,:password,false)"
-            db.session.execute(sql, {"username":username,"password":hash_value})
+            sql = "INSERT INTO users (username, password, admin) VALUES (:username, :password, false)"
+            db.session.execute(sql, {"username":username, "password":hash_value})
             db.session.commit()
             del session["not_same_password"]
             del session["user_already_exists"]
@@ -71,7 +71,7 @@ def inarea():
     session["area"] = direction
     rdir = "SELECT id FROM areas WHERE area =:direction"
     rdirection = db.session.execute(rdir, {"direction":direction}).fetchone()[0]
-    sql = "SELECT request FROM requests WHERE area_id =:rdirection"
+    sql = "SELECT request FROM requests WHERE area_id =:rdirection AND is_visible = true"
     result = db.session.execute(sql, {"rdirection":rdirection})
     areas = result.fetchall()
     return render_template("area.html", areas=areas)
@@ -83,7 +83,7 @@ def create_area():
 @app.route("/creating_area", methods=["POST","GET"])
 def creating_area():
     areaname = request.form['name_of_area']
-    sql = "INSERT INTO areas (area, request_amount) VALUES (:areaname, 0)"
+    sql = "INSERT INTO areas (area, request_amount, is_visible) VALUES (:areaname, 0, true)"
     db.session.execute(sql, {"areaname":areaname})
     db.session.commit()
     return redirect("/go_areas")
@@ -92,7 +92,7 @@ def creating_area():
 def go_areas():
     session["area"] = "no_area_chosen"
     del session["area"]
-    sql = db.session.execute("SELECT area, request_amount FROM areas")
+    sql = db.session.execute("SELECT area, request_amount FROM areas WHERE is_visible = true")
     areass = sql.fetchall()
     return render_template("areas.html", areass=areass)
 
@@ -102,7 +102,7 @@ def app_request():
     sarea = session["area"]
     rdir = "SELECT id FROM areas WHERE area =:sarea"
     rdirection = db.session.execute(rdir, {"sarea":sarea}).fetchone()[0]
-    sql = "SELECT need, offer, postedby, contact FROM request WHERE area_id =:rdirection AND request_title =:title"
+    sql = "SELECT need, offer, postedby, contact FROM request WHERE area_id =:rdirection AND request_title =:title AND is_visible = true"
     result = db.session.execute(sql, {"rdirection":rdirection, "title":title})
     requesta = result.fetchall()
     return render_template("request.html", requesta=requesta)
@@ -117,8 +117,8 @@ def create_request():
     area = session["area"]
     rdir = "SELECT id FROM areas WHERE area =:area"
     areaid = db.session.execute(rdir, {"area":area}).fetchone()[0]
-    sql = "INSERT INTO request (request_title, need, offer, contact, postedby, area_id) VALUES (:title, :need, :offer, :contact, :postedby, :areaid)"
-    sql2 = "INSERT INTO requests (request, area_id) VALUES (:title, :areaid)"
+    sql = "INSERT INTO request (request_title, need, offer, contact, postedby, area_id, is_visible) VALUES (:title, :need, :offer, :contact, :postedby, :areaid, true)"
+    sql2 = "INSERT INTO requests (request, area_id, is_visible) VALUES (:title, :areaid, true)"
     sql3 = "UPDATE areas SET request_amount = (request_amount+1) WHERE area =:area"
     db.session.execute(sql3, {"area":area})
     db.session.execute(sql2, {"title":title, "areaid":areaid})
