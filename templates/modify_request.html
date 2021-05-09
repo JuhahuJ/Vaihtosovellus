@@ -1,15 +1,15 @@
 {% if session.username %}
 <p>Olet kirjautunut nimellä {{ session.username }}</p>
-<form action="/create_request" method="POST">
+<form action="/modify_request" method="POST">
 <p>Pyynnön otsikko:<br>
-<input type="text" name="title" required="required"></p>
+<input type="text" name="title" required="required" value={{ requesta.request_title }}></p>
 <p>Mitä haluat:<br>
-<input type="text" name="need"></p>
+<input type="text" name="need" value={{ requesta.need }}></p>
 <p>Mitä tarjoat:<br>
-<input name="offer"></p>
+<input name="offer" value={{ requesta.offer }}></p>
 <p>Yhteystietoja:<br>
-<input name="contact"></p>
-<input type="submit" value="Luo pyyntö">
+<input name="contact" value={{ requesta.contact }}></p>
+<input type="submit" value="Muuta pyyntöä">
 </form>
 <a href="/go_areas">Palaa takaisin alueisiin</a>
 <br>

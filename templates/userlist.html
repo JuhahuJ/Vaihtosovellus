@@ -1,0 +1,23 @@
+{% if session.username %}
+{% if session.admin == True %}
+Poista käyttäjiä painamalla käyttäjien nimeä.
+<form action="/delete_user" name="deleteuser" method="POST">
+<style>
+table, th, td {border: 1px solid black;}
+</style>
+<table>
+<tr>
+<th>Käyttäjät</th>
+</tr>
+{% for item in userlist %}
+<tr>
+<td><input name="usersss" type="submit" value={{ item.username }} onclick="return confirm('Oletko varma? Poistettua käyttäjää ei voi palauttaa. Huom! Tämä ei poista käyttäjän pyyntöjä.')"></td>
+</tr>
+{% endfor %}
+</table>
+</form>
+<a href="/go_admin_menu">Mene takaisin</a>
+<br>
+<a href="/logout">Kirjaudu ulos</a>
+{% endif %}
+{% endif %}

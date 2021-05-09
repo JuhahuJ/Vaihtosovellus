@@ -1,0 +1,18 @@
+{% if session.username %}
+{% if session.admin == True %}
+<form action="/change_admin_password" method="POST">
+<p>Uusi yleinen admin salasana:<br>
+<input type="password" name="password" required="required"></p>
+<p>Salasana uudestaan:<br>
+<input type="password" name="password2" required="required"></p>
+<input type="submit" value="Vaihda yleistä admin käyttäjien salasanaa">
+</form>
+<form action="/reset_admin_password" method="POST">
+<input type="submit" value="Resetoi yleinen admin käyttäjien salasana" onclick="return confirm('Oletko varma?')">
+</form>
+<form action="/show_userlist" method="POST">
+<input type="submit" value="Näytä käyttäjälista">
+</form>
+<a href="/go_areas">Palaa takaisin</a>
+{% endif %}
+{% endif %}

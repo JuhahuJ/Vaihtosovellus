@@ -19,5 +19,9 @@ table, th, td {border: 1px solid black;}
 </form>
 <a href="/create_area">Luo alue</a>
 <br>
+{% if session.admin == True %}
+<a href="/go_admin_menu">Mene admin menuun</a>
+<br>
+{% endif %}
 <a href="/logout">Kirjaudu ulos</a>
 {% endif %}

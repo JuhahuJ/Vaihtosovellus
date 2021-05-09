@@ -13,6 +13,9 @@
 <form action="/del_request" name="deleterequest" method="POST">
 <input type="submit" onclick="return confirm('Oletko varma? Poistettua pyyntöä ei voi palauttaa!')" value="Poista tämä pyyntö">
 </form>
+<form action="/go_modify_request" name="modifyrequest" method="POST">
+<input type="submit" value="Muokkaa tätä pyyntöä">
+</form>
 {% endif %}
 <a href="/go_back">Palaa takaisin edelliselle alueelle</a>
 <br>

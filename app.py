@@ -71,12 +71,13 @@ def register():
 
 @app.route("/register_admin",methods=["POST","GET"])
 def register_admin():
-    correctadminpassword = "abc123"
     username = request.form["username"]
     password = request.form["password"]
     password2 = request.form["password2"]
     adminpassword = request.form["adminpassword"]
-    if password == password2 and adminpassword == correctadminpassword:
+    sql = "SELECT password FROM adminpass ORDER BY id DESC"
+    hash_value = db.session.execute(sql).fetchone()[0]
+    if password == password2 and check_password_hash(hash_value, adminpassword):
         try:
             hash_value = generate_password_hash(password)
             sql = "INSERT INTO users (username, password, admin) VALUES (:username, :password, true)"
@@ -88,7 +89,7 @@ def register_admin():
             session["user_already_exists"] = True
             session["not_admin_password"] = False # poista nämä ylimääräiset
             return redirect("/go_register_admin")
-    elif password == password2 and adminpassword != correctadminpassword:
+    elif password == password2 and adminpassword != check_password_hash(hash_value, adminpassword):
         session["user_already_exists"] = False
         session["not_same_password"] = False
         session["not_admin_password"] = True
@@ -102,7 +103,38 @@ def register_admin():
 @app.route("/logout")
 def logout():
     del session["username"]
-    del session["admin"]
+    try:
+        del session['current_request']
+    except KeyError:
+        pass
+    try:
+        del session['noarea']
+    except KeyError:
+        pass
+    try:
+        del session['not_admin_password']
+    except KeyError:
+        pass
+    try:
+        del session['user_already_exists']
+    except KeyError:
+        pass
+    try:
+        del session['admin']
+    except KeyError:
+        pass
+    try:
+        del session['area']
+    except KeyError:
+        pass
+    try:
+        del session['current_area_id']
+    except KeyError:
+        pass
+    try:
+        del session['not_same_password']
+    except KeyError:
+        pass
     return redirect("/")
 
 @app.route("/inarea", methods=["POST","GET"])
@@ -210,3 +242,69 @@ def del_areas():
     db.session.execute(sql3, {"area":area})
     db.session.commit()
     return redirect("/go_areas")
+
+@app.route("/go_modify_request", methods=["POST"])
+def go_modify_request():
+    title = session["current_request"]
+    area = session["area"]
+    rdir = "SELECT id FROM areas WHERE area =:area"
+    rdirection = db.session.execute(rdir, {"area":area}).fetchone()[0]
+    sql = "SELECT * FROM request WHERE area_id =:rdirection AND request_title =:title"
+    result = db.session.execute(sql, {"rdirection":rdirection, "title":title})
+    requesta = result.fetchone()
+    session["current_request"] = requesta.request_title
+    return render_template("modify_request.html", requesta=requesta)
+
+@app.route("/modify_request", methods=["POST"])
+def modify_request():
+    title = request.form['title']
+    current_title = session["current_request"]
+    need = request.form['need']
+    offer = request.form['offer']
+    contact = request.form['contact']
+    area = session["area"]
+    rdir = "SELECT id FROM areas WHERE area =:area"
+    areaid = db.session.execute(rdir, {"area":area}).fetchone()[0]
+    sql = "UPDATE request SET (request_title, need, offer, contact) = (:title, :need, :offer, :contact) WHERE request_title = :current_title AND area_id = :areaid"
+    sql2 = "UPDATE requests SET request = :title WHERE request = :current_title AND area_id = :areaid"
+    db.session.execute(sql, {"title":title, "need":need, "offer":offer, "contact":contact, "current_title":current_title, "areaid":areaid})
+    db.session.execute(sql2, {"title":title, "current_title":current_title, "areaid":areaid})
+    db.session.commit()
+    return redirect("/go_back")
+
+@app.route("/go_admin_menu")
+def go_admin_menu():
+    return render_template("/admin_menu.html")
+
+@app.route("/change_admin_password", methods=["POST"])
+def change_admin_password():
+    password = request.form['password']
+    password2 = request.form['password2']
+    username = session["username"]
+    if password == password2:
+        passw = generate_password_hash(password)
+        sql = "INSERT INTO adminpass (password, changedby) VALUES (:passw, :username)"
+        db.session.execute(sql, {"passw":passw, "username":username})
+        db.session.commit()
+    return redirect("go_admin_menu")
+
+@app.route("/reset_admin_password", methods=["POST"])
+def reset_admin_password():
+    sql = "DELETE FROM adminpass WHERE NOT changedby = ''"
+    db.session.execute(sql)
+    db.session.commit()
+    return redirect("go_admin_menu")
+
+@app.route("/delete_user", methods=["POST"])
+def delete_user():
+    user = request.form['usersss']
+    sql = "DELETE FROM users WHERE username = :user"
+    db.session.execute(sql, {"user":user})
+    db.session.commit()
+    return redirect("/show_userlist")
+
+@app.route("/show_userlist", methods=["POST", "GET"])
+def show_userlist():
+    sql = db.session.execute("SELECT username FROM users WHERE admin = False")
+    userlist = sql.fetchall()
+    return render_template("/userlist.html", userlist=userlist)
