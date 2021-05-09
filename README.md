@@ -1,18 +1,18 @@
 # Vaihtosovellus
 
-## Nykyinen tilanne
+## Lopullinen tilanne
 
-Sovelluksessa voi luoda käyttäjän, selata ja luoda alueita ja nähdä alueiden vaihtopyynnöt. Käyttäjä voi luoda vaihtopyynnön, jossa täytyy olla otsikko, ja jossa voi olla haluttu asia, tarjottu asia ja yhteystietoja. Sovellusta voi testata Herokussa osoitteessa https://vaihtosovellus.herokuapp.com/. 
+Sovelluksessa voi luoda tavallisen käyttäjän, tai adminkäyttäjän. 
 
-## Puuttuvia asioita
+Tavallinen käyttäjä voi luoda alueita ja pyyntöjä alueille ja muokata luomiaan pyyntöjä.
 
--pyyntöjen muokkaus ja poisto
+Adminkäyttäjä voi tehdä samat asiat, kuin tavallinen käyttäjä + poistaa alueita, vaihtaa yleisen admin salasanan, resetoida yleisen admin salasanan, muokata kaikkia pyyntöjä ja nähdä listan käyttäjistä, jotka eivät ole adminkäytäjiä, ja poistaa niitä.
 
--admin käyttäjät
+Sovellukseen on luotu yksi alkuperäinen adminkäyttäjä, jonka nimi on admin ja salasana on 1234.
 
--alueiden poisto (admin ominaisuus)
+Yleinen admin salasana, jonka avulla voi luoda uusia admin käyttäjiä, on abc123, jos sitä ei ole muutettu.
 
--koodin siistiminen
+Sovellusta voi testata herokussa osoitteessa https://vaihtosovellus.herokuapp.com/
 
 ## Tavoite
 
