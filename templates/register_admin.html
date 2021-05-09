@@ -4,6 +4,9 @@ Tarkista, että kirjoitit salasanan oikein
 {% if session.user_already_exists == True %}
 Käyttäjä on jo olemassa
 {% endif %}
+{% if session.not_admin_password == True %}
+Väärä yleinen admin salasana
+{% endif %}
 <form action="/register" method="POST">
 <p>Tunnus:<br>
 <input type="text" name="username" required="required"></p>
@@ -11,8 +14,10 @@ Käyttäjä on jo olemassa
 <input type="password" name="password" required="required"></p>
 <p>Salasana uudestaan:<br>
 <input type="password" name="password2" required="required"></p>
+<p>Yleinen admin salasana:<br>
+<input type="password" name="adminpassword" required="required"></p>
 <input type="submit" value="Rekisteröidy">
 </form>
-<a href="/">Palaa takaisin</a>
+<a href="/go_register">Palaa takaisin normalille rekisteröitymissivulle</a>
 <br>
-<a href="/go_register_admin">Rekisteröi admin käyttäjä</a>
+<a href="/">Palaa takaisin aloitussivulle</a>

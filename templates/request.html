@@ -11,7 +11,7 @@
 <br><br>
 {% if session.username == requesta.postedby %}
 <form action="/del_request" name="deletearea" method="POST">
-<input type="submit" onclick="return confirm('Oletko varma? (poistettua pyyntöä ei voi palauttaa)')" value="Poista tämä pyyntö">
+<input type="submit" onclick="return confirm('Oletko varma? Poistettua pyyntöä ei voi palauttaa!')" value="Poista tämä pyyntö">
 </form>
 {% endif %}
 <a href="/go_back">Palaa takaisin edelliselle alueelle</a>

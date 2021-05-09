@@ -14,6 +14,7 @@ db = SQLAlchemy(app)
 def index():
     session["user_already_exists"] = False
     session["not_same_password"] = False
+    session["not_admin_password"] = False
     return render_template("index.html")
 
 @app.route("/login",methods=["POST"])
@@ -37,6 +38,10 @@ def login():
 def go_register():
     return render_template("register.html")
 
+@app.route("/go_register_admin")
+def go_register_admin():
+    return render_template("register_admin.html")
+
 @app.route("/register",methods=["POST","GET"])
 def register():
     username = request.form["username"]
@@ -48,8 +53,6 @@ def register():
             sql = "INSERT INTO users (username, password, admin) VALUES (:username, :password, false)"
             db.session.execute(sql, {"username":username, "password":hash_value})
             db.session.commit()
-            del session["not_same_password"]
-            del session["user_already_exists"]
             return redirect("/")
         except Exception:
             session["not_same_password"] = False
@@ -59,6 +62,36 @@ def register():
         session["user_already_exists"] = False
         session["not_same_password"] = True
         return redirect("/go_register")
+
+@app.route("/register_admin",methods=["POST","GET"])
+def register_admin():
+    correctadminpassword = "abc123"
+    username = request.form["username"]
+    password = request.form["password"]
+    password2 = request.form["password2"]
+    adminpassword = request.form["adminpassword"]
+    if password == password2 and adminpassword == correctadminpassword:
+        try:
+            hash_value = generate_password_hash(password)
+            sql = "INSERT INTO users (username, password, admin) VALUES (:username, :password, true)"
+            db.session.execute(sql, {"username":username, "password":hash_value})
+            db.session.commit()
+            return redirect("/")
+        except Exception:
+            session["not_same_password"] = False
+            session["user_already_exists"] = True
+            session["not_admin_password"] = False # poista nämä ylimääräiset
+            return redirect("/go_register_admin")
+    elif password == password2 and adminpassword != correctadminpassword:
+        session["user_already_exists"] = False
+        session["not_same_password"] = False
+        session["not_admin_password"] = True
+        return redirect("/go_register_admin")
+    else:
+        session["user_already_exists"] = False
+        session["not_same_password"] = True
+        session["not_admin_password"] = False
+        return redirect("/go_register_admin")
 
 @app.route("/logout")
 def logout():
@@ -91,6 +124,9 @@ def creating_area():
 
 @app.route("/go_areas", methods=["POST","GET"])
 def go_areas():
+    del session["not_same_password"]
+    del session["user_already_exists"]
+    del session["not_admin_password"]
     session["area"] = "no_area_chosen"
     del session["area"]
     sql = db.session.execute("SELECT area, request_amount FROM areas")
