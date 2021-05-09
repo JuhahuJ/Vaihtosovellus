@@ -1,4 +1,7 @@
 {% if session.username %}
+{% if session.too_short_areaname %}
+Alueen nimen pitää olla vähintään 3 merkkiä pitkä
+{% endif %}
 <form action="/creating_area" name="createarea" method="POST">
 <p>Alueen nimi:<br>
 <input type="text" name="name_of_area" required="required"></p>

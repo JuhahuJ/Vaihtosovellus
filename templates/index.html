@@ -1,3 +1,9 @@
+{% if session.incorrect_user == True %}
+Väärä käyttäjänimi tai käyttäjänimeä ei ole olemassa
+{% endif %}
+{% if session.incorrect_password == True %}
+Väärä salasana
+{% endif %}
 <form action="/login" method="POST">
 <p>Tunnus:<br>
 <input type="text" name="username"></p>

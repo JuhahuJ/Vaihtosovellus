@@ -12,9 +12,62 @@ db = SQLAlchemy(app)
 
 @app.route("/")
 def index():
-    session["user_already_exists"] = False
-    session["not_same_password"] = False
-    session["not_admin_password"] = False
+    try:
+        del session['current_request']
+    except KeyError:
+        pass
+    try:
+        del session['noarea']
+    except KeyError:
+        pass
+    try:
+        del session['not_admin_password']
+    except KeyError:
+        pass
+    try:
+        del session['user_already_exists']
+    except KeyError:
+        pass
+    try:
+        del session['admin']
+    except KeyError:
+        pass
+    try:
+        del session['area']
+    except KeyError:
+        pass
+    try:
+        del session['current_area_id']
+    except KeyError:
+        pass
+    try:
+        del session['not_same_password']
+    except KeyError:
+        pass
+    try:
+        del session['incorrect_password']
+    except KeyError:
+        pass
+    try:
+        del session['incorrect_user']
+    except KeyError:
+        pass
+    try:
+        del session['too_short_username']
+    except KeyError:
+        pass
+    try:
+        del session['too_short_password']
+    except KeyError:
+        pass
+    try:
+        del session['too_short_areaname']
+    except KeyError:
+        pass
+    try:
+        del session['duplicate_request_title']
+    except KeyError:
+        pass
     return render_template("index.html")
 
 @app.route("/login",methods=["POST"])
@@ -25,6 +78,8 @@ def login():
     result = db.session.execute(sql, {"username":username})
     user = result.fetchone()    
     if user == None:
+        session["incorrect_user"] = True
+        session["incorrect_password"] = False
         return redirect("/")
     else:
         hash_value = user[0]
@@ -38,6 +93,8 @@ def login():
             session["username"] = username
             return redirect("/go_areas")
         else:
+            session["incorrect_password"] = True
+            session["incorrect_user"] = False
             return redirect("/")
 
 @app.route("/go_register")
@@ -53,21 +110,38 @@ def register():
     username = request.form["username"]
     password = request.form["password"]
     password2 = request.form["password2"]
-    if password == password2:
-        try:
-            hash_value = generate_password_hash(password)
-            sql = "INSERT INTO users (username, password, admin) VALUES (:username, :password, false)"
-            db.session.execute(sql, {"username":username, "password":hash_value})
-            db.session.commit()
-            return redirect("/")
-        except Exception:
-            session["not_same_password"] = False
-            session["user_already_exists"] = True
-            return redirect("/go_register")
-    else:
+    if len(username) < 3:
+        session["too_short_username"] = True
+        session["too_short_password"] = False
+        session["not_same_password"] = False
         session["user_already_exists"] = False
-        session["not_same_password"] = True
         return redirect("/go_register")
+    elif len(password) < 4:
+        session["too_short_password"] = True
+        session["too_short_username"] = False
+        session["not_same_password"] = False
+        session["user_already_exists"] = False
+        return redirect("/go_register")
+    else:
+        if password == password2:
+            try:
+                hash_value = generate_password_hash(password)
+                sql = "INSERT INTO users (username, password, admin) VALUES (:username, :password, false)"
+                db.session.execute(sql, {"username":username, "password":hash_value})
+                db.session.commit()
+                return redirect("/")
+            except Exception:
+                session["not_same_password"] = False
+                session["user_already_exists"] = True
+                session["too_short_username"] = False
+                session["too_short_password"] = False
+                return redirect("/go_register")
+        else:
+            session["user_already_exists"] = False
+            session["not_same_password"] = True
+            session["too_short_username"] = False
+            session["too_short_password"] = False
+            return redirect("/go_register")
 
 @app.route("/register_admin",methods=["POST","GET"])
 def register_admin():
@@ -77,28 +151,38 @@ def register_admin():
     adminpassword = request.form["adminpassword"]
     sql = "SELECT password FROM adminpass ORDER BY id DESC"
     hash_value = db.session.execute(sql).fetchone()[0]
-    if password == password2 and check_password_hash(hash_value, adminpassword):
-        try:
-            hash_value = generate_password_hash(password)
-            sql = "INSERT INTO users (username, password, admin) VALUES (:username, :password, true)"
-            db.session.execute(sql, {"username":username, "password":hash_value})
-            db.session.commit()
-            return redirect("/")
-        except Exception:
-            session["not_same_password"] = False
-            session["user_already_exists"] = True
-            session["not_admin_password"] = False # poista nämä ylimääräiset
-            return redirect("/go_register_admin")
-    elif password == password2 and adminpassword != check_password_hash(hash_value, adminpassword):
-        session["user_already_exists"] = False
+    if len(password) < 4:
+        session["too_short_password"] = True
         session["not_same_password"] = False
-        session["not_admin_password"] = True
-        return redirect("/go_register_admin")
-    else:
         session["user_already_exists"] = False
-        session["not_same_password"] = True
         session["not_admin_password"] = False
         return redirect("/go_register_admin")
+    else:
+        if password == password2 and check_password_hash(hash_value, adminpassword):
+            try:
+                hash_value = generate_password_hash(password)
+                sql = "INSERT INTO users (username, password, admin) VALUES (:username, :password, true)"
+                db.session.execute(sql, {"username":username, "password":hash_value})
+                db.session.commit()
+                return redirect("/")
+            except Exception:
+                session["not_same_password"] = False
+                session["user_already_exists"] = True
+                session["not_admin_password"] = False
+                session["too_short_password"] = False
+                return redirect("/go_register_admin")
+        elif password == password2 and adminpassword != check_password_hash(hash_value, adminpassword):
+            session["user_already_exists"] = False
+            session["not_same_password"] = False
+            session["not_admin_password"] = True
+            session["too_short_password"] = False
+            return redirect("/go_register_admin")
+        else:
+            session["user_already_exists"] = False
+            session["not_same_password"] = True
+            session["not_admin_password"] = False
+            session["too_short_password"] = False
+            return redirect("/go_register_admin")
 
 @app.route("/logout")
 def logout():
@@ -135,6 +219,30 @@ def logout():
         del session['not_same_password']
     except KeyError:
         pass
+    try:
+        del session['incorrect_password']
+    except KeyError:
+        pass
+    try:
+        del session['incorrect_user']
+    except KeyError:
+        pass
+    try:
+        del session['too_short_username']
+    except KeyError:
+        pass
+    try:
+        del session['too_short_password']
+    except KeyError:
+        pass
+    try:
+        del session['too_short_areaname']
+    except KeyError:
+        pass
+    try:
+        del session['duplicate_request_title']
+    except KeyError:
+        pass
     return redirect("/")
 
 @app.route("/inarea", methods=["POST","GET"])
@@ -156,13 +264,21 @@ def create_area():
 @app.route("/creating_area", methods=["POST","GET"])
 def creating_area():
     areaname = request.form['name_of_area']
-    sql = "INSERT INTO areas (area, request_amount) VALUES (:areaname, 0)"
-    db.session.execute(sql, {"areaname":areaname})
-    db.session.commit()
-    return redirect("/go_areas")
+    if len(areaname) < 3:
+        session["too_short_areaname"] = True
+        return redirect("/create_area")
+    else:
+        sql = "INSERT INTO areas (area, request_amount) VALUES (:areaname, 0)"
+        db.session.execute(sql, {"areaname":areaname})
+        db.session.commit()
+        return redirect("/go_areas")
 
 @app.route("/go_areas", methods=["POST","GET"])
 def go_areas():
+    try:
+        del session['duplicate_request_title']
+    except KeyError:
+        pass
     session["area"] = "no_area_chosen"
     del session["area"]
     sql = db.session.execute("SELECT area, request_amount FROM areas")
@@ -191,14 +307,20 @@ def create_request():
     area = session["area"]
     rdir = "SELECT id FROM areas WHERE area =:area"
     areaid = db.session.execute(rdir, {"area":area}).fetchone()[0]
-    sql = "INSERT INTO request (request_title, need, offer, contact, postedby, area_id) VALUES (:title, :need, :offer, :contact, :postedby, :areaid)"
-    sql2 = "INSERT INTO requests (request, area_id) VALUES (:title, :areaid)"
-    sql3 = "UPDATE areas SET request_amount = (request_amount+1) WHERE area =:area"
-    db.session.execute(sql3, {"area":area})
-    db.session.execute(sql2, {"title":title, "areaid":areaid})
-    db.session.execute(sql, {"title":title, "need":need, "offer":offer, "contact":contact, "postedby":postedby, "areaid":areaid})
-    db.session.commit()
-    return redirect("/go_areas")
+    sql4 = "SELECT request_title FROM request WHERE request_title = :title"
+    check = db.session.execute(sql4, {"title":title}).fetchone()
+    if check is not None:
+        session["duplicate_request_title"] = True
+        return redirect("/go_create_request")
+    else:
+        sql = "INSERT INTO request (request_title, need, offer, contact, postedby, area_id) VALUES (:title, :need, :offer, :contact, :postedby, :areaid)"
+        sql2 = "INSERT INTO requests (request, area_id) VALUES (:title, :areaid)"
+        sql3 = "UPDATE areas SET request_amount = (request_amount+1) WHERE area =:area"
+        db.session.execute(sql3, {"area":area})
+        db.session.execute(sql2, {"title":title, "areaid":areaid})
+        db.session.execute(sql, {"title":title, "need":need, "offer":offer, "contact":contact, "postedby":postedby, "areaid":areaid})
+        db.session.commit()
+        return redirect("/go_areas")
 
 @app.route("/go_create_request")
 def go_create_request():

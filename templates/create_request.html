@@ -1,5 +1,8 @@
 {% if session.username %}
 <p>Olet kirjautunut nimellä {{ session.username }}</p>
+{% if session.duplicate_request_title %}
+Tällä nimellä on jo olemassa pyyntö
+{% endif %}
 <form action="/create_request" method="POST">
 <p>Pyynnön otsikko:<br>
 <input type="text" name="title" required="required"></p>

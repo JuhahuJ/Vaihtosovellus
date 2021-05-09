@@ -7,6 +7,9 @@ Käyttäjä on jo olemassa
 {% if session.not_admin_password == True %}
 Väärä yleinen admin salasana
 {% endif %}
+{% if session.too_short_password == True %}
+Salasanan minimipituus on 4 merkkiä
+{% endif %}
 <form action="/register_admin" method="POST">
 <p>Tunnus:<br>
 <input type="text" name="username" required="required"></p>
