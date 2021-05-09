@@ -13,27 +13,11 @@ db = SQLAlchemy(app)
 @app.route("/")
 def index():
     try:
-        del session['current_request']
-    except KeyError:
-        pass
-    try:
-        del session['noarea']
-    except KeyError:
-        pass
-    try:
         del session['not_admin_password']
     except KeyError:
         pass
     try:
         del session['user_already_exists']
-    except KeyError:
-        pass
-    try:
-        del session['admin']
-    except KeyError:
-        pass
-    try:
-        del session['area']
     except KeyError:
         pass
     try:
@@ -58,14 +42,6 @@ def index():
         pass
     try:
         del session['too_short_password']
-    except KeyError:
-        pass
-    try:
-        del session['too_short_areaname']
-    except KeyError:
-        pass
-    try:
-        del session['duplicate_request_title']
     except KeyError:
         pass
     return render_template("index.html")
@@ -196,14 +172,6 @@ def logout():
     except KeyError:
         pass
     try:
-        del session['not_admin_password']
-    except KeyError:
-        pass
-    try:
-        del session['user_already_exists']
-    except KeyError:
-        pass
-    try:
         del session['admin']
     except KeyError:
         pass
@@ -213,26 +181,6 @@ def logout():
         pass
     try:
         del session['current_area_id']
-    except KeyError:
-        pass
-    try:
-        del session['not_same_password']
-    except KeyError:
-        pass
-    try:
-        del session['incorrect_password']
-    except KeyError:
-        pass
-    try:
-        del session['incorrect_user']
-    except KeyError:
-        pass
-    try:
-        del session['too_short_username']
-    except KeyError:
-        pass
-    try:
-        del session['too_short_password']
     except KeyError:
         pass
     try:
