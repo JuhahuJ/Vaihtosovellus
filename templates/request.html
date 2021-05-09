@@ -10,9 +10,12 @@
 {{ requesta.postedby }}
 <br><br>
 {% if session.username == requesta.postedby %}
-<a href="/del_area">Poista tämä pyyntö</a>
-<br>
+<form action="/del_request" name="deletearea" method="POST">
+<input type="submit" onclick="return confirm('Oletko varma? (poistettua pyyntöä ei voi palauttaa)')" value="Poista tämä pyyntö">
+</form>
 {% endif %}
+<a href="/go_back">Palaa takaisin edelliselle alueelle</a>
+<br>
 <a href="/go_areas">Palaa takaisin alueisiin</a>
 <br>
 <a href="/logout">Kirjaudu ulos</a>

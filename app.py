@@ -132,8 +132,8 @@ def create_request():
 def go_create_request():
     return render_template("create_request.html")
 
-@app.route("/del_area")
-def del_area():
+@app.route("/del_request", methods=["POST"])
+def del_request():
     current_request = session["current_request"]
     area = session["area"]
     area_id = session["current_area_id"]
@@ -147,3 +147,14 @@ def del_area():
     del session["current_request"]
     del session["current_request_id"]
     return redirect("/go_areas")
+
+@app.route("/go_back")
+def go_back():
+    direction = session["area"]
+    rdir = "SELECT id FROM areas WHERE area =:direction"
+    rdirection = db.session.execute(rdir, {"direction":direction}).fetchone()[0]
+    sql = "SELECT request FROM requests WHERE area_id =:rdirection"
+    result = db.session.execute(sql, {"rdirection":rdirection})
+    areas = result.fetchall()
+    session["current_area_id"] = rdirection
+    return render_template("area.html", areas=areas)
