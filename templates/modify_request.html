@@ -1,0 +1,17 @@
+{% if session.username %}
+<p>Olet kirjautunut nimellä {{ session.username }}</p>
+<form action="/create_request" method="POST">
+<p>Pyynnön otsikko:<br>
+<input type="text" name="title" required="required"></p>
+<p>Mitä haluat:<br>
+<input type="text" name="need"></p>
+<p>Mitä tarjoat:<br>
+<input name="offer"></p>
+<p>Yhteystietoja:<br>
+<input name="contact"></p>
+<input type="submit" value="Luo pyyntö">
+</form>
+<a href="/go_areas">Palaa takaisin alueisiin</a>
+<br>
+<a href="/logout">Kirjaudu ulos</a>
+{% endif %}

@@ -7,7 +7,7 @@ Käyttäjä on jo olemassa
 {% if session.not_admin_password == True %}
 Väärä yleinen admin salasana
 {% endif %}
-<form action="/register" method="POST">
+<form action="/register_admin" method="POST">
 <p>Tunnus:<br>
 <input type="text" name="username" required="required"></p>
 <p>Salasana:<br>

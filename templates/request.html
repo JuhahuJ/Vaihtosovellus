@@ -9,8 +9,8 @@
 <p>Luonut:<br>
 {{ requesta.postedby }}
 <br><br>
-{% if session.username == requesta.postedby %}
-<form action="/del_request" name="deletearea" method="POST">
+{% if session.username == requesta.postedby or session.admin == True %}
+<form action="/del_request" name="deleterequest" method="POST">
 <input type="submit" onclick="return confirm('Oletko varma? Poistettua pyyntöä ei voi palauttaa!')" value="Poista tämä pyyntö">
 </form>
 {% endif %}

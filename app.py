@@ -21,7 +21,7 @@ def index():
 def login():
     username = request.form["username"]
     password = request.form["password"]
-    sql = "SELECT password FROM users WHERE username=:username"
+    sql = "SELECT password FROM users WHERE username= :username"
     result = db.session.execute(sql, {"username":username})
     user = result.fetchone()    
     if user == None:
@@ -29,6 +29,12 @@ def login():
     else:
         hash_value = user[0]
         if check_password_hash(hash_value,password):
+            sql = "SELECT admin FROM users where username= :username"
+            result = db.session.execute(sql, {"username":username}).fetchone()[0]
+            if result == True:
+                session["admin"] = True
+            else:
+                session["admin"] = False
             session["username"] = username
             return redirect("/go_areas")
         else:
@@ -96,6 +102,7 @@ def register_admin():
 @app.route("/logout")
 def logout():
     del session["username"]
+    del session["admin"]
     return redirect("/")
 
 @app.route("/inarea", methods=["POST","GET"])
@@ -124,9 +131,6 @@ def creating_area():
 
 @app.route("/go_areas", methods=["POST","GET"])
 def go_areas():
-    del session["not_same_password"]
-    del session["user_already_exists"]
-    del session["not_admin_password"]
     session["area"] = "no_area_chosen"
     del session["area"]
     sql = db.session.execute("SELECT area, request_amount FROM areas")
@@ -181,8 +185,7 @@ def del_request():
     db.session.execute(sql3, {"current_request":current_request, "area_id":area_id})
     db.session.commit()
     del session["current_request"]
-    del session["current_request_id"]
-    return redirect("/go_areas")
+    return redirect("/go_back")
 
 @app.route("/go_back")
 def go_back():
@@ -194,3 +197,16 @@ def go_back():
     areas = result.fetchall()
     session["current_area_id"] = rdirection
     return render_template("area.html", areas=areas)
+
+@app.route("/del_areas", methods=["POST"])
+def del_areas():
+    area = session["area"]
+    area_id = session["current_area_id"]
+    sql = "DELETE FROM requests WHERE area_id = :area_id"
+    sql2 = "DELETE FROM request WHERE area_id = :area_id"
+    sql3 = "DELETE FROM areas WHERE area = :area"
+    db.session.execute(sql, {"area_id":area_id})
+    db.session.execute(sql2, {"area_id":area_id})
+    db.session.execute(sql3, {"area":area})
+    db.session.commit()
+    return redirect("/go_areas")
